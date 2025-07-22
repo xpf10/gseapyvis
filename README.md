@@ -20,3 +20,16 @@ This is a Python command-line tool for visualizing [GSEAPy](https://github.com/z
 ```bash
 git clone https://github.com/xpf10/gseapyvis.git
 cd gseapyvis
+```
+windows:
+```
+poetry  install
+Invoke-Expression (poetry env activate)
+gseapyvis.cmd .\data\test.pkl 
+```
+Linux:
+```
+poetry install
+poetry env use python3
+gseapyvis .\data\test.pkl
+```
