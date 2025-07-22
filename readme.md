@@ -1,0 +1,22 @@
+# 🎯 GSEA Plotting Tool
+
+This is a Python command-line tool for visualizing [GSEAPy](https://github.com/zqfang/GSEApy) prerank results from `.pkl` files using `plotnine` and `patchworklib`. The tool creates an enrichment plot and saves it as an image file.
+
+---
+
+## 📦 Features
+
+- 📈 Line plot of RES (Running Enrichment Score)
+- 🔦 Hit indicator lines and colored gradient background
+- 🛠 Easy CLI with [Fire](https://github.com/google/python-fire)
+- 🎨 High-quality output using `plotnine` and `patchworklib`
+
+---
+
+## 🚀 Installation
+
+### 🔧 Clone the repo:
+
+```bash
+git clone https://github.com/xpf10/gseapyvis.git
+cd gseapyvis
