@@ -20,6 +20,8 @@ This is a Python command-line tool for visualizing [GSEAPy](https://github.com/z
 ```bash
 git clone https://github.com/xpf10/gseapyvis.git
 cd gseapyvis
+
+python .\gseapyvis\cli.py .\data\test.pkl --output_file gsea_result.pdf
 ```
 windows:
 ```
