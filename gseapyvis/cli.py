@@ -109,12 +109,14 @@ def plot_gsea_result(pkl_file, output_file="gsea_plot.png", term_index=1):
         position_top = (max(resdata["res"])+min(resdata["res"]))/2 * 0.8
     position_left = len(resdata) * 0.70
     p1 = (ggplot(resdata, aes(x='index', y='res')) +
-          geom_line() +
+          geom_line(color="green") +
+          geom_hline(yintercept=0, color="grey", size=0.5, linetype="dashed") +
           theme_bw() +
           theme(axis_text_x=element_blank(),
                 legend_position="none",
                 axis_ticks=element_blank(),
-                panel_background=element_blank()) +
+                panel_background=element_blank(),
+                panel_grid_major=element_blank()) +
           annotate("text", x=position_left, y=position_top, label=f"nes = {nes:.4f}", color="black", size=10,ha='left',) +
           annotate("text", x=position_left, y=position_top-0.03, label=f"pval = {pval:.4f}", color="black", size=10,ha='left',) +
           annotate("text", x=position_left, y=position_top-0.06, label=f"Fdr = {fdr:.4f}", color="black", size=10,ha='left',) +
@@ -161,7 +163,8 @@ def plot_gsea_result(pkl_file, output_file="gsea_plot.png", term_index=1):
                 axis_text=element_blank(),
                 axis_ticks=element_blank(),
                 axis_title=element_blank(),
-                panel_background=element_blank())
+                panel_background=element_blank())+
+          xlab("Rank in Ordered Dataset")
           )
     f1 = pw.load_ggplot(p1, figsize=(5, 3))
     f2 = pw.load_ggplot(p2, figsize=(5, 0.5))
