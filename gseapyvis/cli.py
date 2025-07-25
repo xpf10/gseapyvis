@@ -64,7 +64,7 @@ def compute_heat_blocks(gsdata, htCol=("red", "blue"), htHeight=1.0):
         #all_blocks.append(block_df)
 
     return block_df
-def plot_gsea_result(pkl_file, output_file="gsea_plot.png", term_index=1):
+def plot_gsea_result(pkl_file, output_file="gsea_plot.png", term_index=1,to_buffer=False):
     """
     Plot GSEA result from a .pkl file.
 
@@ -168,9 +168,18 @@ def plot_gsea_result(pkl_file, output_file="gsea_plot.png", term_index=1):
           )
     f1 = pw.load_ggplot(p1, figsize=(5, 3))
     f2 = pw.load_ggplot(p2, figsize=(5, 0.5))
-    pw.vstack(f2, f1, margin=0.05).savefig(output_file)
-    #bar.update(100)
-    console.print(f"[bold green]✅ Plot saved to:[/bold green] [underline]{output_file}[/underline]")
+    pw_plot = pw.vstack(f2, f1, margin=0.05)
+
+    if to_buffer:
+        import io
+        buf = io.BytesIO()
+        pw_plot.savefig(buf, format='png', dpi=300, bbox_inches='tight')
+        buf.seek(0)
+        console.print("[bold green]✅ Plot generated in memory (BytesIO)[/bold green]")
+        return buf
+    else:
+        pw_plot.savefig(output_file)
+        console.print(f"[bold green]✅ Plot saved to:[/bold green] [underline]{output_file}[/underline]")
 
 def main():
     fire.Fire(plot_gsea_result)
