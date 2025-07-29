@@ -15,6 +15,7 @@ jupyter = "^1.1.1"
 notebook = "^7.4.4"
 rich = "^14.0.0"
 tqdm = "^4.67.1"
+typer = "^0.16.0"
 
 
 [build-system]
@@ -22,4 +23,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-gseapyvis = "gseapyvis.cli:main"
+gseapyvis = "gseapyvis.cli:app"
