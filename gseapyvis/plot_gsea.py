@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 from matplotlib import colors
 
+import io
 import os
+import tempfile
 import joblib
 import pandas as pd
 import numpy as np
-from lets_plot import *
+from lets_plot import (
+    ggplot, aes, geom_line, geom_hline, geom_point, geom_text,
+    geom_rect, geom_vline, gggrid, ggsize,
+    theme, theme_bw, xlab, ylab, ggtitle,
+    scale_x_continuous, scale_y_continuous, scale_fill_identity,
+    ggsave, layer_tooltips, element_blank,
+)
 import typer
 from rich.console import Console
 
@@ -15,7 +23,6 @@ app = typer.Typer(add_completion=False)
 
 def compute_heat_blocks(gsdata, htCol=("red", "blue"), htHeight=1.0):
     all_blocks = []
-
     for setid in gsdata["Description"].unique():
         tmp = gsdata[gsdata["Description"] == setid].copy()
 
@@ -33,12 +40,11 @@ def compute_heat_blocks(gsdata, htCol=("red", "blue"), htHeight=1.0):
 
         tmp["group"] = (tmp["inv"] != tmp["inv"].shift()).cumsum()
 
-        blocks = []
         for _, g in tmp.groupby("group"):
             xmin = g.index.min()
             xmax = g.index.max() + 1
             color_idx = g["inv"].iloc[0]
-            blocks.append({
+            all_blocks.append({
                 "xmin": xmin,
                 "xmax": xmax,
                 "ymin": 0,
@@ -47,12 +53,12 @@ def compute_heat_blocks(gsdata, htCol=("red", "blue"), htHeight=1.0):
                 "Description": setid
             })
 
-        cmap = colors.LinearSegmentedColormap.from_list("custom_gradient", [htCol[0], "white", htCol[1]])
-        color_list = [colors.to_hex(cmap(i / 10)) for i in range(10)]
+    cmap = colors.LinearSegmentedColormap.from_list("custom_gradient", [htCol[0], "white", htCol[1]])
+    color_list = [colors.to_hex(cmap(i / 10)) for i in range(10)]
 
-        block_df = pd.DataFrame(blocks)
-        block_df["col"] = block_df["col"] - 1
-        block_df["col"] = block_df["col"].apply(lambda i: color_list[i])
+    block_df = pd.DataFrame(all_blocks)
+    block_df["col"] = block_df["col"] - 1
+    block_df["col"] = block_df["col"].apply(lambda i: color_list[i])
 
     return block_df
 
@@ -91,7 +97,7 @@ def gsea_plot(res_data, term, rnk=None):
         "gene": matched_genes
     })
     if rnk is not None:
-        hits_data = hits_data.merge(rnk, how="left")
+        hits_data = hits_data.merge(rnk, how="left", on="gene")
 
     x_position = 0.75 * max(resdata["index"])
     if nes > 0:
@@ -151,7 +157,7 @@ def gsea_plot(res_data, term, rnk=None):
 def plot_gsea_result(
     pkl_file: str = typer.Argument(..., help="GSEAPy prerank result .pkl file path"),
     output_file: str = typer.Option("gsea_plot.html", "-o", "--output", help="Output file path (.html, .svg, .png, .pdf)"),
-    term_index: int = typer.Option(1, "-t", "--term-index", help="Index of the term to plot (starting from 0)"),
+    term_index: int = typer.Option(0, "-t", "--term-index", help="Index of the term to plot (starting from 0)"),
     to_buffer: bool = typer.Option(False, help="Return plot as BytesIO buffer instead of saving to file"),
 ):
     """
@@ -183,8 +189,6 @@ def plot_gsea_result(
     combined = gsea_plot(pre_res.results, term)
 
     if to_buffer:
-        import io
-        import tempfile
         fd, tmppath = tempfile.mkstemp(suffix='.svg')
         os.close(fd)
         ggsave(combined, tmppath)
@@ -197,7 +201,12 @@ def plot_gsea_result(
     else:
         output_dir = os.path.dirname(output_file) or '.'
         output_name = os.path.basename(output_file)
-        ggsave(combined, output_name, path=output_dir)
+        try:
+            ggsave(combined, output_name, path=output_dir)
+        except ValueError as e:
+            console.print(f"[bold red]❌ Export failed:[/bold red] {e}")
+            console.print("[yellow]Hint: raster formats (.png, .pdf) require ImageMagick. Try .html or .svg instead.[/yellow]")
+            raise typer.Exit(code=1)
         console.print(f"[bold green]✅ Plot saved to:[/bold green] [underline]{output_file}[/underline]")
 
 

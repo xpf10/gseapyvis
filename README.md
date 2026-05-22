@@ -1,5 +1,9 @@
 # gseapyvis
 
+<p align="center">
+  <img src="assets/logo.png" alt="gseapyvis Logo" width="200" height="200">
+</p>
+
 GSEA enrichment plot visualization for [GSEAPy](https://github.com/zqfang/GSEApy) prerank results, built with [lets-plot](https://lets-plot.org/).
 
 ## Features
@@ -53,14 +57,14 @@ ggsave(p, "gsea_plot.html")
 ### CLI
 
 ```bash
-# Default: HTML output
+# Default: HTML output, first term
 python ./gseapyvis/cli.py plot ./data/test.pkl
 
 # Specify output format (.html, .svg, .png, .pdf)
 python ./gseapyvis/cli.py plot ./data/test.pkl -o gsea_result.svg
 
 # Select term by index
-python ./gseapyvis/cli.py plot ./data/test.pkl -t 0 -o gsea_result.html
+python ./gseapyvis/cli.py plot ./data/test.pkl -t 1 -o gsea_result.html
 ```
 
 Or after `uv sync` / `poetry install`:
